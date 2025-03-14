@@ -19,44 +19,49 @@ class FileParserController extends Controller
         if (!$request->hasFile('file_upload')) {
             return redirect()->route('home')->with('error', 'Tidak ada file yang diupload');
         }
-    
-        $uploadedFiles = $request->file('file_upload'); // Dapatkan semua file
+
+        $uploadedFiles = $request->file('file_upload'); // Mendapatkan semua file yang diunggah
         $filePath = storage_path('app/public/uploads/');
-    
+
         if (!file_exists($filePath)) {
             mkdir($filePath, 0777, true);
         }
-    
+
         $processedFiles = [];
-    
+
         foreach ($uploadedFiles as $uploadedFile) {
-            if (!$uploadedFile->isValid()) continue; // Lewati file yang tidak valid
-    
+            // Lewati jika bukan file valid
+            if (!$uploadedFile->isValid()) continue;
+
+            // Dapatkan nama asli file
             $originalName = $uploadedFile->getClientOriginalName();
-    
-            // Pastikan hanya file TXT yang diterima
-            if ($uploadedFile->getClientOriginalExtension() != 'txt') {
+
+            // Periksa apakah item yang diunggah adalah sebuah folder
+            if ($uploadedFile->getMimeType() === 'inode/directory') {
+                continue; // Lewati folder, karena kita akan mengambil isinya
+            }
+
+            // Pastikan hanya file .txt yang diterima
+            if ($uploadedFile->getClientOriginalExtension() !== 'txt') {
                 continue;
             }
-    
+
             // Simpan file
             $uploadedFile->move($filePath, $originalName);
-    
+
             // Proses file txt
             $this->processTxtFile($filePath . $originalName, $originalName);
-    
+
             $processedFiles[] = $originalName;
         }
-    
+
         if (empty($processedFiles)) {
             return redirect()->route('home')->with('error', 'Tidak ada file TXT yang valid diupload');
         }
-    
+
         return redirect()->route('home')->with('success', 'File berhasil diupload dan diproses: ' . implode(', ', $processedFiles));
     }
     
-
-
     private function processTxtFile($filePath, $fileName)
     {
         $targetDir = storage_path('app/public/parsed/' . $fileName);

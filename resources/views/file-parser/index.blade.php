@@ -17,12 +17,12 @@
                     </div>
                     @endif
                     <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
+                    @csrf
                         <div class="form-group mb-3">
-                            <label for="file_upload">Upload TXT Files</label>
-                            <input type="file" class="form-control" name="file_upload[]" id="file_upload" accept=".txt" multiple required>
+                            <label for="file_upload">Upload File TXT</label>
+                            <input type="file" class="form-control" name="file_upload[]" id="file_upload" accept=".txt" multiple webkitdirectory required>
                             <small class="form-text text-muted">
-                                Upload satu atau beberapa file .txt dengan data yang dipisahkan oleh karakter |
+                                Pilih beberapa file .txt, sistem akan mendeteksi dan memprosesp file .txt.
                             </small>
                         </div>
                         <button type="submit" class="btn btn-primary">Upload dan Proses</button>
